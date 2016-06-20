@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "WriteCommand.h"
 #include "common/common.h"
+#include <process.h>
 
 
 CWriteCommand::CWriteCommand(void)
@@ -19,18 +20,41 @@ CWriteCommand::CWriteCommand(CFileHandler &handle)
 	SetFileHandler(handle);
 }
 
-int CWriteCommand::ExcuteCommand()
+unsigned int WINAPI CWriteCommand::CommandThread(void *args)
 {
-    int ret_code = system(m_command_str);
-	if(ret_code != 0)
+	CWriteCommand *pCommand = (CWriteCommand *)args;
+
+	int exit_code = system(pCommand->GetCommand());
+	if(exit_code != 0)
 	{
-		SaveFormattedLog(LOG_RUN_LEVEL,"failed to excute command:%s,retrun code: %d",m_command_str,ret_code);
+		SaveFormattedLog(LOG_RUN_LEVEL,"failed to excute command:%s,retrun code: %d",pCommand->GetCommand(),exit_code);
 	}
 	else
 	{
-		SaveFormattedLog(LOG_RUN_LEVEL,"success to excute command:%s",m_command_str,ret_code);
+		SaveFormattedLog(LOG_RUN_LEVEL,"success to excute command:%s",pCommand->GetCommand(),exit_code);
 	}
-	return ret_code;
+	return exit_code;
+}
+
+int CWriteCommand::ExcuteCommand()
+{
+	DWORD exit_code = 1;
+	
+    HANDLE command_thread_handle = (HANDLE)_beginthreadex(NULL, 0, CWriteCommand::CommandThread, this, 0,NULL);	
+	if(NULL == command_thread_handle)
+	{
+		SaveFormattedLog(LOG_RUN_LEVEL,"Create command  thread failed!");
+		return 1;
+	}
+	if(WAIT_TIMEOUT  == WaitForSingleObject(command_thread_handle ,30000))
+	{
+		TerminateThread(command_thread_handle ,2);	
+		SaveFormattedLog(LOG_RUN_LEVEL,"command thread:%s timeout!",m_command_str);
+		return 2;
+	}
+	GetExitCodeThread(command_thread_handle,&exit_code);
+	CloseHandle(command_thread_handle);
+	return 0; 
 }
 
 int  CWriteCommand::DetectDevice()
@@ -67,7 +91,7 @@ int CWriteCommand::SetFileHandler(CFileHandler &handler)
 int CWriteCommand::ProgramEncryptData(int position)
 {
 	int error_code = 1;
-	sprintf(m_command_str,"dpcmd -p %s -a 0x%x",m_file_handler.GetFilePath(),position);
+	sprintf(m_command_str,"dpcmd -p %s -a 0x%x -v",m_file_handler.GetFilePath(),position);
 	
 	error_code = ExcuteCommand();
 	return error_code;

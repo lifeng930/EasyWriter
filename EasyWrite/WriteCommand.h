@@ -1,6 +1,7 @@
 #pragma once
 #include "common/Log.h"
 #include  "FileHandler.h"
+#include <windows.h>
 
 
 #define MAX_COMMAND_LEN  512
@@ -12,6 +13,7 @@ public:
 	//Detect device
 	int DetectDevice();
 
+	static unsigned int WINAPI CommandThread(void *args);
 
 	//从指定位置开始编程
 	int ProgramDevice(unsigned int ui_start_position);
@@ -23,6 +25,8 @@ public:
 	int EraseChip();
 
 	int ProgramEncryptData(int position);
+
+	char *GetCommand(){return m_command_str;}
 
 public:
 	~CWriteCommand(void);

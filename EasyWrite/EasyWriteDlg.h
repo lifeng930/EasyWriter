@@ -82,6 +82,10 @@ public:
 	//afx_msg void OnBnClickedSysFailed();
 public:
 //	afx_msg void OnBnClickedEncryFailed();
+	void RefreshChipNo();
+
+	static unsigned int WINAPI WriteSysData(void *arg);
+	static unsigned int WINAPI WriteEncryptData(void *arg);
 
 	// 采用电脑单独烧写一个芯片
 	static unsigned int WINAPI SingleWriteOneChip(void *arg);
