@@ -3,7 +3,6 @@
 CFileHandler::CFileHandler(void)
 {
 	memset(m_file_path,0,MAX_FILE_PATH_LEN);
-
 }
 
 
