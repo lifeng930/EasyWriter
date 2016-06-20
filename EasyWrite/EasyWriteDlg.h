@@ -41,6 +41,9 @@ public:
 
 	int TestSignal();
 
+	//获取连接电脑的烧录器数目
+	int GetBusNumber();
+
 // 实现
 protected:
 
