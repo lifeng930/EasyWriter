@@ -140,7 +140,15 @@ int CEncryptWrite::GenerateFile()
 
 	/* 获取设备的uid  */
 	unsigned char temp_id[15] = {0};
-	error_code = GetDeviceID(temp_id);
+	try
+	{
+		error_code = GetDeviceID(temp_id);
+	}
+	catch(...)
+	{
+		SaveFormattedLog(LOG_RUN_LEVEL,"GetDeviceID unknown exception for get device id");
+		return 1;
+	}
 	if(error_code != 0)
 	{
 		SaveFormattedLog(LOG_RUN_LEVEL,"Get device uid failed! ");
@@ -152,7 +160,15 @@ int CEncryptWrite::GenerateFile()
 	{
 		return error_code;
 	}
-	error_code = GenerateFunc((uint8_t*)temp_id,8,(uint8_t*)encrypt_buff,MAX_BIN_FILE_LEN);
+	try
+	{
+		error_code = GenerateFunc((uint8_t*)temp_id,8,(uint8_t*)encrypt_buff,MAX_BIN_FILE_LEN);
+	}
+	catch(...)
+	{
+		SaveFormattedLog(LOG_RUN_LEVEL,"call GenerateFunc unknown exception");
+		return 1;
+	}
 	FreeLibrary(instance);
 	SaveFormattedLog(LOG_RUN_LEVEL,"call  encrypt function return: %d",error_code);
 	return 0;

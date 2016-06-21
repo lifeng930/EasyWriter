@@ -143,10 +143,10 @@ Log::Log(const std::string& strFileName)
 	std::string log_file_path(path);
 	log_file_path += std::string("\\");
 	std::string full_name = std::string(__DATE__) + std::string("_") + strFileName;
-	log_file_path += full_name;//std::string(strFileName);
+	log_file_path += full_name;
 	StringToWString(log_file_path, wstr_log_file_path);
 
-	m_outFile.open(wstr_log_file_path.c_str(), std::ios::out | std::ios::app | std::ios::binary);
+	m_outFile.open(wstr_log_file_path.c_str(), std::ios::out | std::ios::app);
 }
 
 Log::~Log()

@@ -22,9 +22,17 @@ CWriteCommand::CWriteCommand(CFileHandler &handle)
 
 unsigned int WINAPI CWriteCommand::CommandThread(void *args)
 {
+	int exit_code = 1;
 	CWriteCommand *pCommand = (CWriteCommand *)args;
-
-	int exit_code = system(pCommand->GetCommand());
+	try
+	{
+	   exit_code = system(pCommand->GetCommand());
+	}
+	catch(...)
+	{
+		SaveFormattedLog(LOG_RUN_LEVEL,"excution command %s failed,unknown exception",pCommand->GetCommand());
+		return 1;
+	}
 	if(exit_code != 0)
 	{
 		SaveFormattedLog(LOG_RUN_LEVEL,"failed to excute command:%s,retrun code: %d",pCommand->GetCommand(),exit_code);
@@ -46,7 +54,7 @@ int CWriteCommand::ExcuteCommand()
 		SaveFormattedLog(LOG_RUN_LEVEL,"Create command  thread failed!");
 		return 1;
 	}
-	if(WAIT_TIMEOUT  == WaitForSingleObject(command_thread_handle ,30000))
+	if(WAIT_TIMEOUT  == WaitForSingleObject(command_thread_handle ,25000))
 	{
 		TerminateThread(command_thread_handle ,2);	
 		SaveFormattedLog(LOG_RUN_LEVEL,"command thread:%s timeout!",m_command_str);
@@ -54,7 +62,8 @@ int CWriteCommand::ExcuteCommand()
 	}
 	GetExitCodeThread(command_thread_handle,&exit_code);
 	CloseHandle(command_thread_handle);
-	return 0; 
+	int ret_code = exit_code;
+	return ret_code; 
 }
 
 int  CWriteCommand::DetectDevice()
@@ -88,10 +97,19 @@ int CWriteCommand::SetFileHandler(CFileHandler &handler)
 	return 0;
 }
 
-int CWriteCommand::ProgramEncryptData(int position)
+int CWriteCommand::ProgramSysData(int position)
 {
 	int error_code = 1;
 	sprintf(m_command_str,"dpcmd -p %s -a 0x%x -v",m_file_handler.GetFilePath(),position);
+	
+	error_code = ExcuteCommand();
+	return error_code;
+}
+
+int CWriteCommand::ProgramEncryptData(int position)
+{
+	int error_code = 1;
+	sprintf(m_command_str,"dpcmd -p %s -a 0x%x ",m_file_handler.GetFilePath(),position);
 	
 	error_code = ExcuteCommand();
 	return error_code;

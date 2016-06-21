@@ -24,6 +24,8 @@ public:
 	//²Á³ýÐ¾Æ¬
 	int EraseChip();
 
+	int ProgramSysData(int position);
+
 	int ProgramEncryptData(int position);
 
 	char *GetCommand(){return m_command_str;}
