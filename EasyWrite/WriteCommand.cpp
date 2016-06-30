@@ -97,6 +97,15 @@ int CWriteCommand::SetFileHandler(CFileHandler &handler)
 	return 0;
 }
 
+int CWriteCommand::ProgramSysData(int position,int index)
+{
+	int error_code = 1;
+	sprintf(m_command_str,"dpcmd -p %s -a 0x%x --device %d -v",m_file_handler.GetFilePath(),position,index + 1);
+	
+	error_code = ExcuteCommand();
+	return error_code;
+}
+
 int CWriteCommand::ProgramSysData(int position)
 {
 	int error_code = 1;
@@ -104,6 +113,16 @@ int CWriteCommand::ProgramSysData(int position)
 	
 	error_code = ExcuteCommand();
 	return error_code;
+}
+
+int CWriteCommand::ProgramEncryptData(int position,int index)
+{
+	int error_code = 1;
+	sprintf(m_command_str,"dpcmd -p %s  -a 0x%x --device %d ",m_file_handler.GetFilePath(),position,index + 1);
+	
+	error_code = ExcuteCommand();
+	return error_code;
+
 }
 
 int CWriteCommand::ProgramEncryptData(int position)

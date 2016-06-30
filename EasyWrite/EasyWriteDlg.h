@@ -5,6 +5,14 @@
 
 #define IDC_STATUS 5001
 
+class CEasyWriteDlg ;
+typedef struct tag_task_thread_para
+{
+	CEasyWriteDlg *pDlg;
+	int            serial_port_index;
+
+}task_thread_para;
+
 // CEasyWriteDlg 对话框
 class CEasyWriteDlg : public CDialog
 {
@@ -33,9 +41,6 @@ public:
 
 	int ResetPin();
 
-//	int SetBusyStatus();
-
-//	int SetIdleStatus();
 
 	int SetSuccess();
 
@@ -51,10 +56,15 @@ protected:
 	HANDLE	m_work_thread_handle;
 	//串口句柄
 	HANDLE m_serial_handle;
+	HANDLE m_serial_array_handle[10];
+
+	// 连接的串口数目
+	int  m_serial_port_number;
 	CString            m_src_file_path;
 	CStatusBarCtrl     m_StatBar;
 	HICON m_hIcon;
 	CWnd* m_pDrawWnd;
+	TCHAR m_serial_port_array[10][20];
 
 	// 生成的消息映射函数
 	virtual BOOL OnInitDialog();
@@ -74,17 +84,13 @@ public:
 	afx_msg void OnBnClickedEncrypt();
 public:
 	afx_msg void OnBnClickedSelect();
-//public:
-//	afx_msg void OnBnClickedBlankWrite();
-//public:
-//	afx_msg void OnBnClickedSysSuccess();
-//public:
-//	afx_msg void OnBnClickedEncrySuccess();
+
 public:
-	//afx_msg void OnBnClickedSysFailed();
-public:
-//	afx_msg void OnBnClickedEncryFailed();
+
 	void RefreshChipNo();
+
+	static unsigned int WINAPI WriteSpecifiedSysData(void *arg);
+	static unsigned int WINAPI WriteSpecifiedEncryptData(void *arg);
 
 	static unsigned int WINAPI WriteSysData(void *arg);
 	static unsigned int WINAPI WriteEncryptData(void *arg);
@@ -93,6 +99,10 @@ public:
 	static unsigned int WINAPI SingleWriteOneChip(void *arg);
 
 	static unsigned int WINAPI WriteOneChip(void *arg);
+
+	static unsigned int WINAPI WriteSpecifiedChip(void *arg);
+
+	static unsigned int WINAPI TaskDispatcher(void *arg);
 	
 	//监听上位机线程，确认下一个芯片已经安装到位
 	static unsigned int WINAPI CheckNewChip(void *arg);
@@ -100,9 +110,12 @@ public:
 	static unsigned int WINAPI Go2Die(void *arg);
 
 	int InitialSerialPort();
+	int InitialSerialPortArray();
 public:
 	afx_msg void OnBnClickedButton2();
 public:
 	afx_msg void OnBnClickedButton3();
 	afx_msg void OnBnClickedSingleWrite();
 };
+
+

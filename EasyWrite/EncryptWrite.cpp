@@ -54,6 +54,35 @@ int TestOrder(char *file_name,unsigned char *buff,int len)
 	return 0;
 }
 
+int CEncryptWrite::WriteEncrypy(int index)
+{
+	output_buff = new unsigned char[MAX_BIN_FILE_LEN + MAX_HEAD_LEN + 1];
+	if(NULL == output_buff)
+	{
+		return 1;
+	}
+	memset(output_buff,0,MAX_BIN_FILE_LEN + MAX_HEAD_LEN + 1);
+	memcpy(output_buff,m_out_head,MAX_HEAD_LEN);
+
+	unsigned char *temp = output_buff + MAX_HEAD_LEN;
+	unsigned char *pos = encrypt_buff;
+	unsigned int *inverse_data = new unsigned int[1024*2/4];
+	
+	/*  循环写2k加密数据 */
+	for(int i = 0;i < 1024 *2/4;i++)
+	{
+		inverse_data[i] = pos[4*i] + (pos[4*i +1] << 8) + (pos[4*i + 2] << 16) + (pos[4*i + 3]<<24);
+	}
+	memcpy(temp,inverse_data,MAX_BIN_FILE_LEN);	
+	
+	delete []inverse_data;
+
+	int error_code = SaveOutFile();
+	
+	return error_code;
+
+}
+
 int CEncryptWrite::WriteEncrypy()
 {
 	output_buff = new unsigned char[MAX_BIN_FILE_LEN + MAX_HEAD_LEN + 1];
@@ -80,6 +109,47 @@ int CEncryptWrite::WriteEncrypy()
 	int error_code = SaveOutFile();
 	
 	return error_code;
+}
+
+int CEncryptWrite::SaveOutFile(int index)
+{
+	char temp_name[50] = {0};
+	TCHAR temp_name_t[50] = {0};
+	memset(temp_name,0,50);
+	_snprintf(temp_name,49,"C:\\encrypt_%d.bin",index);
+    Char2Tchar(temp_name,temp_name_t);
+	if(-1 != _access(temp_name,0) )
+	{
+		//删除文件
+		DeleteFile(temp_name_t);
+	}
+	FILE *fp = fopen(temp_name,"wb");
+	if(NULL == fp)
+	{
+		SaveFormattedLog(LOG_RUN_LEVEL,"save generate file failed! ");
+		return 1;
+	}
+	int write_len = fwrite(output_buff,sizeof(char),MAX_BIN_FILE_LEN + MAX_HEAD_LEN,fp);
+
+	/* 附加14k的随机数据 */
+	unsigned int count = 14 * 1024;
+	for(unsigned int i = 0;i < count;i++)
+	{
+		unsigned char temp_char = rand()%255;
+		fwrite(&temp_char,1,1,fp);
+	}
+	//将文件指针移动到尾部
+	fseek(fp,0,SEEK_END); //把指针移动到文件的结尾 ，获取文件长度
+	unsigned int len=ftell(fp); //获取文件长度
+
+	fclose(fp);
+	fp = NULL;
+
+	CFileHandler handler(temp_name);
+	CWriteCommand excuter(handler);
+	excuter.ProgramEncryptData(0x300000);
+	return 0;
+
 }
 
 int CEncryptWrite::SaveOutFile()
@@ -119,23 +189,28 @@ int CEncryptWrite::SaveOutFile()
 
 }
 
-
+encrypt_data CEncryptWrite::m_encrypt_pfn = NULL;
 
 int CEncryptWrite::GenerateFile()
 {
 	int error_code = 1;
-	HINSTANCE instance = LoadLibrary(TEXT("LibUniEncrypt.dll"));
-	if(NULL == instance)
+	if(NULL == m_encrypt_pfn)
 	{
-		SaveFormattedLog(LOG_RUN_LEVEL,"call LoadLibrary error: %d",GetLastError());
-		return error_code;
-	}
-	LPCSTR lstr = "encrypt_data";
-    encrypt_data GenerateFunc = (encrypt_data)GetProcAddress(instance,lstr);
-	if(NULL == GenerateFunc)
-	{
-		SaveFormattedLog(LOG_RUN_LEVEL,"call GetProcAddress error: %d",GetLastError());
-		return error_code;
+		HINSTANCE instance = LoadLibrary(TEXT("LibUniEncrypt.dll"));
+		if(NULL == instance)
+		{
+			SaveFormattedLog(LOG_RUN_LEVEL,"call LoadLibrary error: %d",GetLastError());
+			return error_code;
+		}
+		LPCSTR lstr = "encrypt_data";
+		encrypt_data GenerateFunc = (encrypt_data)GetProcAddress(instance,lstr);
+		if(NULL == GenerateFunc)
+		{
+			SaveFormattedLog(LOG_RUN_LEVEL,"call GetProcAddress error: %d",GetLastError());
+			return error_code;
+		}
+
+		m_encrypt_pfn = GenerateFunc;
 	}
 
 	/* 获取设备的uid  */
@@ -162,14 +237,17 @@ int CEncryptWrite::GenerateFile()
 	}
 	try
 	{
-		error_code = GenerateFunc((uint8_t*)temp_id,8,(uint8_t*)encrypt_buff,MAX_BIN_FILE_LEN);
+		error_code = m_encrypt_pfn((uint8_t*)temp_id,8,(uint8_t*)encrypt_buff,MAX_BIN_FILE_LEN);
 	}
 	catch(...)
 	{
 		SaveFormattedLog(LOG_RUN_LEVEL,"call GenerateFunc unknown exception");
 		return 1;
 	}
-	FreeLibrary(instance);
+
+
+	//持续烧录，不退出
+//	FreeLibrary(instance);
 	SaveFormattedLog(LOG_RUN_LEVEL,"call  encrypt function return: %d",error_code);
 	return 0;
 }
@@ -265,7 +343,7 @@ int CEncryptWrite::GetDeviceID(unsigned char *out_buffer)
 	FILE *pipe = _popen(command_str,"r");
 	if(!pipe)
 	{
-		SaveFormattedLog(LOG_RUN_LEVEL,"create pipe failed,error code: %d!",GetLastError());
+		SaveFormattedLog(LOG_RUN_LEVEL,"create pipe failed,error code: %d!",errno);
 		Sleep(5000);
 		return 1;
 	}

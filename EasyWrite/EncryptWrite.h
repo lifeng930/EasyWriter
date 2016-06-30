@@ -6,7 +6,7 @@
 class CEncryptWrite
 {
 public:
-	
+	int WriteEncrypy(int index);
 	int WriteEncrypy();
 	CEncryptWrite(void);
 
@@ -14,6 +14,7 @@ public:
 	int GenerateFile();
 
 //	int SetSrcFilePath(const char *file_path);
+	int SaveOutFile(int index);
 	int SaveOutFile();
 	int ProgramEncrypt(int pos);
 	int GetDeviceID(unsigned char *out_buf);
@@ -23,6 +24,7 @@ public:
 	~CEncryptWrite(void);
 private:
 
+	static encrypt_data m_encrypt_pfn;
 	//源文件对象
 	CFileHandler m_file_handler;
 	
