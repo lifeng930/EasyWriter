@@ -109,7 +109,7 @@ int CWriteCommand::ProgramSysData(int position)
 int CWriteCommand::ProgramEncryptData(int position)
 {
 	int error_code = 1;
-	sprintf(m_command_str,"dpcmd -p %s -a 0x%x ",m_file_handler.GetFilePath(),position);
+	sprintf(m_command_str,"dpcmd -p %s  -a 0x%x ",m_file_handler.GetFilePath(),position);
 	
 	error_code = ExcuteCommand();
 	return error_code;

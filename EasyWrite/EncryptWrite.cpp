@@ -265,7 +265,8 @@ int CEncryptWrite::GetDeviceID(unsigned char *out_buffer)
 	FILE *pipe = _popen(command_str,"r");
 	if(!pipe)
 	{
-		SaveFormattedLog(LOG_RUN_LEVEL,"create pipe failed!");
+		SaveFormattedLog(LOG_RUN_LEVEL,"create pipe failed,error code: %d!",GetLastError());
+		Sleep(5000);
 		return 1;
 	}
 
