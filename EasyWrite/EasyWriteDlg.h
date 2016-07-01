@@ -89,6 +89,8 @@ public:
 
 	void RefreshChipNo();
 
+	static unsigned int WINAPI WriteOneSerialPort(void *arg);
+
 	static unsigned int WINAPI WriteSpecifiedSysData(void *arg);
 	static unsigned int WINAPI WriteSpecifiedEncryptData(void *arg);
 
