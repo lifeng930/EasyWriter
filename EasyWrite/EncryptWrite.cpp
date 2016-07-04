@@ -250,6 +250,8 @@ int CEncryptWrite::SaveTestBin(unsigned char *source_uid)
 	return 0;
 }
 
+extern void AlarmVoice();
+
 // out_buffer 至少有13个存储字节
 int CEncryptWrite::GetDeviceID(unsigned char *out_buffer)
 {
@@ -266,6 +268,7 @@ int CEncryptWrite::GetDeviceID(unsigned char *out_buffer)
 	if(!pipe)
 	{
 		SaveFormattedLog(LOG_RUN_LEVEL,"create pipe failed,error code: %d!",errno);
+		AlarmVoice();
 		Sleep(5000);
 		return 1;
 	}
