@@ -16,6 +16,12 @@ typedef struct tag_task_thread_para
 // CEasyWriteDlg 对话框
 class CEasyWriteDlg : public CDialog
 {
+
+private:
+	CRITICAL_SECTION m_critical_section;
+
+	int AddSuccessChip();
+	int AddFailedChip();
 // 构造
 public:
 	CEasyWriteDlg(CWnd* pParent = NULL);	// 标准构造函数
