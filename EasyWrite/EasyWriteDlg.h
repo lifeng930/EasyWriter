@@ -64,8 +64,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
-	afx_msg void OnBnClickedCheck();
-
+	
 	afx_msg void OnBnTestUid();
 
 	
@@ -74,16 +73,10 @@ public:
 	afx_msg void OnBnClickedEncrypt();
 public:
 	afx_msg void OnBnClickedSelect();
-//public:
-//	afx_msg void OnBnClickedBlankWrite();
-//public:
-//	afx_msg void OnBnClickedSysSuccess();
-//public:
-//	afx_msg void OnBnClickedEncrySuccess();
+
+
 public:
-	//afx_msg void OnBnClickedSysFailed();
-public:
-//	afx_msg void OnBnClickedEncryFailed();
+
 	void RefreshChipNo();
 
 	static unsigned int WINAPI WriteSysData(void *arg);
@@ -97,7 +90,7 @@ public:
 	//监听上位机线程，确认下一个芯片已经安装到位
 	static unsigned int WINAPI CheckNewChip(void *arg);
 
-	static unsigned int WINAPI Go2Die(void *arg);
+
 
 	int InitialSerialPort();
 public:
