@@ -54,7 +54,7 @@ int CWriteCommand::ExcuteCommand()
 		SaveFormattedLog(LOG_RUN_LEVEL,"Create command  thread failed!");
 		return 1;
 	}
-	if(WAIT_TIMEOUT  == WaitForSingleObject(command_thread_handle ,25000))
+	if(WAIT_TIMEOUT  == WaitForSingleObject(command_thread_handle ,40000))
 	{
 		TerminateThread(command_thread_handle ,2);	
 		SaveFormattedLog(LOG_RUN_LEVEL,"command thread:%s timeout!",m_command_str);
