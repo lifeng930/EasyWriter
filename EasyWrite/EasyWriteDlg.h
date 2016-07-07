@@ -78,7 +78,7 @@ public:
 public:
 
 	void RefreshChipNo();
-
+    static unsigned int WINAPI EraseSysData(void *arg);
 	static unsigned int WINAPI WriteSysData(void *arg);
 	static unsigned int WINAPI WriteEncryptData(void *arg);
 

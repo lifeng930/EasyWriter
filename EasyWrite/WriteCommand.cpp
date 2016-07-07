@@ -118,8 +118,10 @@ int CWriteCommand::ProgramEncryptData(int position)
 int CWriteCommand::EraseChip()
 {
 	int error_code = 1;
-	memset(m_command_str,0,MAX_COMMAND_LEN);
-	sprintf(m_command_str,"dpcmd -e");
+	strcpy(m_command_str,"dpcmd -e");
+	
 	error_code = ExcuteCommand();
 	return error_code;
+
+	
 }
