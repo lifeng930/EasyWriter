@@ -100,7 +100,7 @@ int CWriteCommand::SetFileHandler(CFileHandler &handler)
 int CWriteCommand::ProgramSysData(int position,int index)
 {
 	int error_code = 1;
-	sprintf(m_command_str,"dpcmd -p %s -a 0x%x --device %d --type W25Q64FV -v",m_file_handler.GetFilePath(),position,index + 1);
+	sprintf(m_command_str,"dpcmd -p %s -a 0x%x  --type W25Q64FV -v",m_file_handler.GetFilePath(),position);
 	
 	error_code = ExcuteCommand();
 	return error_code;
@@ -109,7 +109,7 @@ int CWriteCommand::ProgramSysData(int position,int index)
 int CWriteCommand::ProgramSysData(int position)
 {
 	int error_code = 1;
-	sprintf(m_command_str,"dpcmd -p %s -a 0x%x -v",m_file_handler.GetFilePath(),position);
+	sprintf(m_command_str,"dpcmd -p %s -a 0x%x --type W25Q64FV -v",m_file_handler.GetFilePath(),position);
 	
 	error_code = ExcuteCommand();
 	return error_code;
