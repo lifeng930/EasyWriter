@@ -473,7 +473,6 @@ int CEncryptWrite::GetDeviceID(int device_index ,unsigned char *out_buffer)
 			}
 			if(NULL != strstr(buffer,"issuing raw instruction \"4B\" returns 12 bytes as required:"))
 			{
-				SaveFormattedLog(LOG_RUN_LEVEL,"Already find device id!");
 				index++;
 			}
 		}
@@ -561,7 +560,7 @@ int CEncryptWrite::GetDeviceID(unsigned char *out_buffer)
 			}
 			if(NULL != strstr(buffer,"issuing raw instruction \"4B\" returns 12 bytes as required:"))
 			{
-				SaveFormattedLog(LOG_RUN_LEVEL,"Already find device id!");
+				
 				index++;
 			}
 		}
