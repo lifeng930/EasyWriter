@@ -24,11 +24,12 @@ public:
 	//²Á³ýÐ¾Æ¬
 	int EraseChip();
 
-
-	int ProgramSysData(int position,int index);
+	// device_index start from 1
+	int ProgramSysData(int position,const int device_index);
 	int ProgramSysData(int position);
 
-	int ProgramEncryptData(int position,int index);
+	//device_index start from 1
+	int ProgramEncryptData(int position,const int device_index);
 	int ProgramEncryptData(int position);
 
 	char *GetCommand(){return m_command_str;}

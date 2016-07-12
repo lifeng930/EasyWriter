@@ -9,7 +9,7 @@ class CEasyWriteDlg ;
 typedef struct tag_task_thread_para
 {
 	CEasyWriteDlg *pDlg;
-	int            serial_port_index;
+	int            serial_port_index;  // start from 0
 
 }task_thread_para;
 
@@ -97,6 +97,7 @@ public:
 
 	static unsigned int WINAPI WriteOneSerialPort(void *arg);
 
+    static unsigned int WINAPI MultiWriteSpecifiedSysData(void *arg);
 	static unsigned int WINAPI WriteSpecifiedSysData(void *arg);
 	static unsigned int WINAPI WriteSpecifiedEncryptData(void *arg);
 
@@ -109,6 +110,8 @@ public:
 	static unsigned int WINAPI WriteOneChip(void *arg);
 
 	static unsigned int WINAPI WriteSpecifiedChip(void *arg);
+
+	static unsigned int WINAPI MultiWriteChip(task_thread_para *arg);
 
 	static unsigned int WINAPI TaskDispatcher(void *arg);
 	

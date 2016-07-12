@@ -6,18 +6,28 @@
 class CEncryptWrite
 {
 public:
-	int WriteEncrypy(int index);
+
+	// device_index start from 1
+	int WriteEncrypy(int device_index);
 	int WriteEncrypy();
 	CEncryptWrite(void);
 
 //	CEncryptWrite(CFileHandler &handler);
 	int GenerateFile();
 
+	// start from 1
+	int GenerateFile(int device_index);
+
 //	int SetSrcFilePath(const char *file_path);
 	int SaveOutFile(int index);
 	int SaveOutFile();
 	int ProgramEncrypt(int pos);
+
+	
 	int GetDeviceID(unsigned char *out_buf);
+
+	// index start from 1
+	int GetDeviceID(int device_index ,unsigned char *out_buf);
 
 	int SaveTestBin(unsigned char *source_uid);
 public:
