@@ -120,7 +120,7 @@ int CWriteCommand::ProgramSysData(int position)
 int CWriteCommand::ProgramEncryptData(int position,const int index)
 {
 	int error_code = 1;
-	sprintf(m_command_str,"dpcmd -p %s  -a 0x%x --device %d",m_file_handler.GetFilePath(),position,index);
+	sprintf(m_command_str,"dpcmd -p %s  -a 0x%x --device %d -v",m_file_handler.GetFilePath(),position,index);
 	
 	error_code = ExcuteCommand();
 	return error_code;
