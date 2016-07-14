@@ -125,6 +125,8 @@ public:
 public:
 	afx_msg void OnBnClickedButton3();
 	afx_msg void OnBnClickedSingleWrite();
+	private:
+		task_thread_para *m_listen_thread_para_array;
 };
 
 
