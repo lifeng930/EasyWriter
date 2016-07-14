@@ -37,8 +37,6 @@ CFileHandler& CFileHandler::operator =(CFileHandler &other)
 {
 	memset(m_file_path,0,MAX_FILE_PATH_LEN);
 	strcpy(m_file_path,other.GetFilePath());
-	FILE *file_pointer = fopen(m_file_path,"r");
-
 	return *this;
 }
 
