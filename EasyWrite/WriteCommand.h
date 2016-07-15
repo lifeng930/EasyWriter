@@ -25,6 +25,9 @@ public:
 	int EraseChip();
 
 	// device_index start from 1
+	int EraseChip(int device_index);
+
+	// device_index start from 1
 	int ProgramSysData(int position,const int device_index);
 	int ProgramSysData(int position);
 

@@ -144,3 +144,13 @@ int CWriteCommand::EraseChip()
 	error_code = ExcuteCommand();
 	return error_code;
 }
+
+
+int CWriteCommand::EraseChip(int device_index)
+{
+	int error_code = 1;
+	memset(m_command_str,0,MAX_COMMAND_LEN);
+	sprintf(m_command_str,"dpcmd -e --device %d",device_index);
+	error_code = ExcuteCommand();
+	return error_code;
+}

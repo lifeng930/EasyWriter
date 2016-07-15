@@ -109,6 +109,9 @@ public:
 
 	static unsigned int WINAPI WriteSpecifiedChip(void *arg);
 
+	static unsigned int WINAPI CleanSpecifiedChip(void *arg);
+	static unsigned int WINAPI CleanMultiChip(void *arg);
+
 	static unsigned int WINAPI MultiWriteChip(task_thread_para *arg);
 
 	static unsigned int WINAPI TaskDispatcher(void *arg);
@@ -116,7 +119,6 @@ public:
 	//监听上位机线程，确认下一个芯片已经安装到位
 	static unsigned int WINAPI CheckNewChip(void *arg);
 
-	static unsigned int WINAPI Go2Die(void *arg);
 
 	int InitialSerialPort();
 	int InitialSerialPortArray();
@@ -127,6 +129,9 @@ public:
 	afx_msg void OnBnClickedSingleWrite();
 	private:
 		task_thread_para *m_listen_thread_para_array;
+
+		// 1 表示烧录，0表示擦除芯片
+		int m_task_type;
 };
 
 
