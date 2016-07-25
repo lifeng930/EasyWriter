@@ -24,14 +24,14 @@ unsigned int WINAPI CWriteCommand::CommandThread(void *args)
 {
 	int exit_code = 1;
 	CWriteCommand *pCommand = (CWriteCommand *)args;
-	try
+	__try
 	{
 	   exit_code = system(pCommand->GetCommand());
 	}
-	catch(...)
+	__except(1)
 	{
-		SaveFormattedLog(LOG_RUN_LEVEL,"excution command %s failed,unknown exception",pCommand->GetCommand());
-		return 1;
+		SaveFormattedLog(LOG_RUN_LEVEL,"excution command %s failed,unknown exception,code: %d",pCommand->GetCommand(),exit_code);
+		ExitThread(exit_code);
 	}
 	if(exit_code != 0)
 	{
