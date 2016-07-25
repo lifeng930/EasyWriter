@@ -37,6 +37,9 @@ public:
 
 	char *GetCommand(){return m_command_str;}
 
+	int ValidationSysData(const char *sys_data_path);
+	int ValidationSysData(int index,const char *sys_data_path);
+
 public:
 	~CWriteCommand(void);
 private:

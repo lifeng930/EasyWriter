@@ -95,6 +95,9 @@ public:
 
 	void RefreshChipNo();
 
+	static unsigned int WINAPI ValidationChipArraySysData(void *arg);
+	static unsigned int WINAPI ValidationSpecifiedChipSysData(void *arg);
+
     static unsigned int WINAPI MultiWriteSpecifiedSysData(void *arg);
 	static unsigned int WINAPI WriteSpecifiedSysData(void *arg);
 	static unsigned int WINAPI WriteSpecifiedEncryptData(void *arg);
@@ -130,7 +133,7 @@ public:
 	private:
 		task_thread_para *m_listen_thread_para_array;
 
-		// 1 表示烧录，0表示擦除芯片
+		// 1 表示烧录，0表示擦除芯片, 2表示校验芯片
 		int m_task_type;
 };
 

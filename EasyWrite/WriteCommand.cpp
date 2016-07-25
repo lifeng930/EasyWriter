@@ -116,6 +116,24 @@ int CWriteCommand::ProgramSysData(int position)
 }
 
 
+int CWriteCommand::ValidationSysData(const char *sys_data_path)
+{
+	int error_code = 1;
+	sprintf(m_command_str,"dpcmd --verify --load-file %s",sys_data_path);
+	
+	error_code = ExcuteCommand();
+	return error_code;
+}
+
+int CWriteCommand::ValidationSysData(int index,const char *sys_data_path)
+{
+	int error_code = 1;
+	sprintf(m_command_str,"dpcmd --verify --load-file %s --device %d",sys_data_path,index);
+	
+	error_code = ExcuteCommand();
+	return error_code;
+}
+
 
 int CWriteCommand::ProgramEncryptData(int position,const int index)
 {
