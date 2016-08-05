@@ -338,62 +338,7 @@ void split(std::string& s, std::string& delim,std::vector< std::string >* ret)
     }  
 }  
 
-int CEncryptWrite::SaveTestBin(unsigned char *source_uid)
-{
-	int error_code = 1;
-	unsigned char *order_byte = source_uid;
-	unsigned char out_buffer[8] = { 0 };
 
-	out_buffer[0] = source_uid[4];
-	out_buffer[1] = source_uid[5];
-	out_buffer[2] = source_uid[6];
-	out_buffer[3] = source_uid[7];
-	out_buffer[4] = source_uid[0];
-	out_buffer[5] = source_uid[1];
-	out_buffer[6] = source_uid[2];
-	out_buffer[7] = source_uid[3];
-
-	SaveFormattedLog(LOG_RUN_LEVEL, "source_uid: %x %x %x %x %x %x %x %x", source_uid[0], source_uid[1], source_uid[2], source_uid[3], source_uid[4], source_uid[5], source_uid[6], source_uid[7]);
-	encrypt_buff = new unsigned char[MAX_BIN_FILE_LEN];
-	memset(encrypt_buff, 0, MAX_BIN_FILE_LEN);
-	if (NULL == encrypt_buff)
-	{
-		return error_code;
-	}
-
-	HINSTANCE instance = LoadLibrary(TEXT("LibUniEncrypt.dll"));
-	if (NULL == instance)
-	{
-		SaveFormattedLog(LOG_RUN_LEVEL, "call LoadLibrary error: %d", GetLastError());
-		return error_code;
-	}
-	LPCSTR lstr = "encrypt_data";
-	encrypt_data GenerateFunc = (encrypt_data)GetProcAddress(instance, lstr);
-	if (NULL == GenerateFunc)
-	{
-		SaveFormattedLog(LOG_RUN_LEVEL, "call GetProcAddress error: %d", GetLastError());
-		return error_code;
-	}
-	error_code = GenerateFunc((uint8_t*)out_buffer, 8, (uint8_t*)encrypt_buff, MAX_BIN_FILE_LEN);
-
-	FreeLibrary(instance);
-	
-	
-
-	
-	WriteEncrypy();
-	FILE *fp = fopen("C:\\raw.bin", "wb");
-	if (NULL == fp)
-	{
-		SaveFormattedLog(LOG_RUN_LEVEL, "open file handler for write raw data failed!");
-		return 1;
-	}
-	fwrite(encrypt_buff, sizeof(char), MAX_BIN_FILE_LEN, fp);
-	fclose(fp);
-	fp = NULL;
-	
-	return 0;
-}
 
 int CEncryptWrite::GetDeviceID(int device_index ,unsigned char *out_buffer)
 {
