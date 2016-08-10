@@ -1,6 +1,7 @@
 #include <io.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <direct.h>
 #include <vector>
 #include "EncryptWrite.h"
 #include "common/Log.h"
@@ -14,6 +15,7 @@ CEncryptWrite::CEncryptWrite(void)
 	                               0x00,0xA5,0x3B,0xCA,
 	                               0x00};
 	memcpy(m_out_head,temp,MAX_HEAD_LEN);
+	memset(m_device_uid,0,DEVICE_UID_LEN);
 }
 
 
@@ -116,10 +118,26 @@ int CEncryptWrite::WriteEncrypy()
 // device_index start from 1
 int CEncryptWrite::SaveOutFile(int device_index)
 {
-	char temp_name[50] = {0};
-	TCHAR temp_name_t[50] = {0};
-	memset(temp_name,0,50);
-	_snprintf(temp_name,49,"C:\\encrypt_%d.bin",device_index);
+	char temp_name[MAX_PATH] = {0};
+	TCHAR temp_name_t[MAX_PATH] = {0};
+	memset(temp_name,0,MAX_PATH);
+	//首先检查是否存在 encrypt_data 文件夹
+	if(-1 == _access("encrypt_data",2))
+	{
+		if(_mkdir("encrypt_data"))
+		{
+			return 1;
+		}
+	}
+//	_snprintf(temp_name,49,"C:\\encrypt_%d.bin",device_index);
+	//获取当前工作路径作为前缀
+	char pre_directory_name[MAX_PATH] = {0};
+	if(NULL == getcwd(pre_directory_name,MAX_PATH))
+	{
+		SaveFormattedLog(LOG_RUN_LEVEL,"Get current work directory failed! ");
+		return 1;
+	}
+	_snprintf(temp_name,MAX_PATH -1,"%s\\encrypt_data\\%s",pre_directory_name,m_device_uid);
     Char2Tchar(temp_name,temp_name_t);
 	if(-1 != _access(temp_name,0) )
 	{
@@ -219,10 +237,10 @@ int CEncryptWrite::GenerateFile(int device_index)
 	}
 
 	/* 获取设备的uid  */
-	unsigned char temp_id[15] = {0};
+//	unsigned char temp_id[15] = {0};
 	try
 	{
-		error_code = GetDeviceID(device_index,temp_id);
+		error_code = GetDeviceID(device_index,m_device_uid);
 	}
 	catch(...)
 	{
@@ -242,7 +260,7 @@ int CEncryptWrite::GenerateFile(int device_index)
 	}
 	try
 	{
-		error_code = m_encrypt_pfn((uint8_t*)temp_id,8,(uint8_t*)encrypt_buff,MAX_BIN_FILE_LEN);
+		error_code = m_encrypt_pfn((uint8_t*)m_device_uid,8,(uint8_t*)encrypt_buff,MAX_BIN_FILE_LEN);
 	}
 	catch(...)
 	{

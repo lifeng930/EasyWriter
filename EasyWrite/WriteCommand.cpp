@@ -121,6 +121,23 @@ int CWriteCommand::ValidationSysData(int index,const char *sys_data_path)
 	return error_code;
 }
 
+int CWriteCommand::ValidationEncryptData(int index,const char *encrypt_data_path)
+{
+	int error_code = 1;
+	sprintf(m_command_str,"dpcmd --verify --load-file %s  -a 0x300000--device %d",encrypt_data_path,index);
+	
+	error_code = ExcuteCommand();
+	return error_code;
+}
+
+int CWriteCommand::ValidationEncryptData(const char *encrypt_data_path)
+{
+	int error_code = 1;
+	sprintf(m_command_str,"dpcmd --verify --load-file %s  -a 0x300000 ",encrypt_data_path);
+	
+	error_code = ExcuteCommand();
+	return error_code;
+}
 
 int CWriteCommand::ProgramEncryptData(int position,const int index)
 {

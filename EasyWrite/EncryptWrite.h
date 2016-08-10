@@ -3,6 +3,7 @@
 #include "LibUniEncrypt.h"
 #include "FileHandler.h"
 
+#define DEVICE_UID_LEN 15
 class CEncryptWrite
 {
 public:
@@ -42,5 +43,7 @@ private:
 	unsigned char     *output_buff;
 
 	unsigned char     m_out_head[MAX_HEAD_LEN + 1];
+
+	unsigned char                    m_device_uid[DEVICE_UID_LEN];
 
 };
