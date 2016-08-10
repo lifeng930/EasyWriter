@@ -118,26 +118,42 @@ int CEncryptWrite::WriteEncrypy()
 // device_index start from 1
 int CEncryptWrite::SaveOutFile(int device_index)
 {
+		//获取当前工作路径作为前缀
 	char temp_name[MAX_PATH] = {0};
 	TCHAR temp_name_t[MAX_PATH] = {0};
 	memset(temp_name,0,MAX_PATH);
-	//首先检查是否存在 encrypt_data 文件夹
-	if(-1 == _access("encrypt_data",2))
-	{
-		if(_mkdir("encrypt_data"))
-		{
-			return 1;
-		}
-	}
-//	_snprintf(temp_name,49,"C:\\encrypt_%d.bin",device_index);
-	//获取当前工作路径作为前缀
+
 	char pre_directory_name[MAX_PATH] = {0};
 	if(NULL == getcwd(pre_directory_name,MAX_PATH))
 	{
 		SaveFormattedLog(LOG_RUN_LEVEL,"Get current work directory failed! ");
 		return 1;
 	}
-	_snprintf(temp_name,MAX_PATH -1,"%s\\encrypt_data\\%s",pre_directory_name,m_device_uid);
+    
+	unsigned char directory_name[MAX_PATH] ={0};
+	_snprintf((char *)directory_name,MAX_PATH -1,"%s\\encrypt_data",pre_directory_name);
+	SaveFormattedLog(LOG_RUN_LEVEL,"data drirectory: %s",directory_name);
+    	SaveFormattedLog(LOG_RUN_LEVEL,"uid: 0x%x - 0x%x - 0x%x -0x%x- 0x%x- 0x%x - 0x%x - 0x%x ",
+		m_device_uid[0],m_device_uid[1],m_device_uid[2],m_device_uid[3],m_device_uid[4],m_device_uid[5],m_device_uid[6],m_device_uid[7]);
+	//首先检查是否存在 encrypt_data 文件夹
+	if(-1 == _access("encrypt_data",2))
+	{
+		SaveFormattedLog(LOG_RUN_LEVEL,"encrypt_data dos'nt exit! ");
+		if(0 !=_mkdir("encrypt_data"))
+		{
+			SaveFormattedLog(LOG_RUN_LEVEL,"create encrypt_data directory failed! ");
+			return 1;
+		}
+	}
+//	_snprintf(temp_name,49,"C:\\encrypt_%d.bin",device_index);
+
+	char encrypt_data_name[256] = {0};
+	sprintf(encrypt_data_name,"0x%x_0x%x_0x%x_0x%x_0x%x_0x%x_0x%x_0x%x",m_device_uid[0],
+		m_device_uid[1],m_device_uid[2],m_device_uid[3],m_device_uid[4],m_device_uid[5],m_device_uid[6],m_device_uid[7]);
+
+	_snprintf(temp_name,MAX_PATH -1,"%s\\encrypt_data\\%s",pre_directory_name,encrypt_data_name);
+
+	SaveFormattedLog(LOG_RUN_LEVEL,"save encrypt data file: %s ",encrypt_data_name);
     Char2Tchar(temp_name,temp_name_t);
 	if(-1 != _access(temp_name,0) )
 	{
@@ -240,7 +256,7 @@ int CEncryptWrite::GenerateFile(int device_index)
 //	unsigned char temp_id[15] = {0};
 	try
 	{
-		error_code = GetDeviceID(device_index,m_device_uid);
+		error_code = GetDeviceID(device_index,(unsigned char *)m_device_uid);
 	}
 	catch(...)
 	{
@@ -252,6 +268,8 @@ int CEncryptWrite::GenerateFile(int device_index)
 		SaveFormattedLog(LOG_RUN_LEVEL,"Get device uid failed! ");
 		return error_code;
 	}
+	SaveFormattedLog(LOG_RUN_LEVEL,"uid: 0x%x-0x%x-0x%x-0x%x-0x%x-0x%x-0x%x- 0x%x ",
+		m_device_uid[0],m_device_uid[1],m_device_uid[2],m_device_uid[3],m_device_uid[4],m_device_uid[5],m_device_uid[6],m_device_uid[7]);
 	encrypt_buff = new unsigned char[MAX_BIN_FILE_LEN];
 	memset(encrypt_buff ,0 ,MAX_BIN_FILE_LEN);
 	if(NULL == encrypt_buff)
