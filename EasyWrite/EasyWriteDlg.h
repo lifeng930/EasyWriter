@@ -139,6 +139,7 @@ private:
 
 		//¹Ì¼þ±£´æµØÖ·
 		char m_sys_data_path[MAX_PATH];
+
 };
 
 
