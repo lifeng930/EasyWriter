@@ -44,6 +44,6 @@ private:
 
 	unsigned char     m_out_head[MAX_HEAD_LEN + 1];
 
-	char                    m_device_uid[DEVICE_UID_LEN];
+	unsigned char                    m_device_uid[DEVICE_UID_LEN];
 
 };
