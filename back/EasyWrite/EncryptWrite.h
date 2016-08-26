@@ -29,6 +29,7 @@ public:
 	// index start from 1
 	int GetDeviceID(int device_index ,unsigned char *out_buf);
 
+	int SaveTestBin(unsigned char *source_uid);
 public:
 	~CEncryptWrite(void);
 private:

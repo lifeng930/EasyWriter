@@ -80,7 +80,8 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
-	
+	afx_msg void OnBnClickedCheck();
+
 	afx_msg void OnBnTestUid();
 
 	
@@ -90,10 +91,6 @@ public:
 public:
 	afx_msg void OnBnClickedSelect();
 
-<<<<<<< HEAD
-
-=======
->>>>>>> validation
 public:
 
 	void RefreshChipNo();
@@ -125,16 +122,13 @@ public:
 	//监听上位机线程，确认下一个芯片已经安装到位
 	static unsigned int WINAPI CheckNewChip(void *arg);
 
-<<<<<<< HEAD
-
-=======
->>>>>>> validation
 
 	int InitialSerialPort();
 	int InitialSerialPortArray();
 public:
 	afx_msg void OnBnClickedButton2();
 public:
+	afx_msg void OnBnClickedButton3();
 	afx_msg void OnBnClickedSingleWrite();
 	private:
 		task_thread_para *m_listen_thread_para_array;

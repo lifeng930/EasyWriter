@@ -37,10 +37,6 @@ CFileHandler& CFileHandler::operator =(CFileHandler &other)
 {
 	memset(m_file_path,0,MAX_FILE_PATH_LEN);
 	strcpy(m_file_path,other.GetFilePath());
-<<<<<<< HEAD
-
-=======
->>>>>>> validation
 	return *this;
 }
 

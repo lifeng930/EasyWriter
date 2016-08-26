@@ -76,7 +76,20 @@ int  CWriteCommand::DetectDevice()
 	return error_code;
 }
 
-
+int CWriteCommand::ProgramDevice(unsigned int ui_start_position)
+{
+	int error_code = 1;
+	if(0 == strlen(m_file_handler.GetFilePath()))
+	{
+		MessageBox(NULL,TEXT("file path not specified!"),TEXT("warning"),MB_OK);
+		return error_code;
+	}
+	memset(m_command_str,0,MAX_COMMAND_LEN);
+	sprintf(m_command_str,"dpcmd -p %s  -a  0x%x",m_file_handler.GetFilePath(),ui_start_position);
+	SaveFormattedLog(LOG_RUN_LEVEL,"begin excute %s ",m_command_str);
+	error_code = ExcuteCommand();
+	return error_code;
+}
 
 int CWriteCommand::SetFileHandler(CFileHandler &handler)
 {

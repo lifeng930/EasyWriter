@@ -15,6 +15,8 @@ public:
 
 	static unsigned int WINAPI CommandThread(void *args);
 
+	//从指定位置开始编程
+	int ProgramDevice(unsigned int ui_start_position);
 
 	int ProgramFillDevice(unsigned int ui_start_position,char fill_char);
 
