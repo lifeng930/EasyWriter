@@ -261,24 +261,7 @@ int CEncryptWrite::GenerateFile(int device_index)
 int CEncryptWrite::GenerateFile()
 {
 	int error_code = 1;
-	if(NULL == m_encrypt_pfn)
-	{
-		HINSTANCE instance = LoadLibrary(TEXT("LibUniEncrypt.dll"));
-		if(NULL == instance)
-		{
-			SaveFormattedLog(LOG_RUN_LEVEL,"call LoadLibrary error: %d",GetLastError());
-			return error_code;
-		}
-		LPCSTR lstr = "encrypt_data";
-		encrypt_data GenerateFunc = (encrypt_data)GetProcAddress(instance,lstr);
-		if(NULL == GenerateFunc)
-		{
-			SaveFormattedLog(LOG_RUN_LEVEL,"call GetProcAddress error: %d",GetLastError());
-			return error_code;
-		}
 
-		m_encrypt_pfn = GenerateFunc;
-	}
 
 	/* 获取设备的uid  */
 	unsigned char temp_id[15] = {0};
@@ -296,26 +279,12 @@ int CEncryptWrite::GenerateFile()
 		SaveFormattedLog(LOG_RUN_LEVEL,"Get device uid failed! ");
 		return error_code;
 	}
-	encrypt_buff = new unsigned char[MAX_BIN_FILE_LEN];
-	memset(encrypt_buff ,0 ,MAX_BIN_FILE_LEN);
-	if(NULL == encrypt_buff)
-	{
-		return error_code;
-	}
-	try
-	{
-		error_code = m_encrypt_pfn((uint8_t*)temp_id,8,(uint8_t*)encrypt_buff,MAX_BIN_FILE_LEN);
-	}
-	catch(...)
-	{
-		SaveFormattedLog(LOG_RUN_LEVEL,"call GenerateFunc unknown exception");
-		return 1;
-	}
+
 
 
 	//持续烧录，不退出
 //	FreeLibrary(instance);
-	SaveFormattedLog(LOG_RUN_LEVEL,"call  encrypt function return: %d",error_code);
+
 	return 0;
 }
 
@@ -428,6 +397,27 @@ int CEncryptWrite::GetDeviceID(int device_index ,unsigned char *out_buffer)
 
 extern void AlarmVoice();
 
+int SaveSeqNo(const unsigned char*buffer,int len)
+{
+	FILE *fp = fopen("sequence.txt","wb");
+	if(NULL == fp)
+	{
+		SaveFormattedLog(LOG_RUN_LEVEL,"open file sequence.txt for write failed!");
+		return 1;
+	}
+	int write_len = fwrite(buffer,sizeof(unsigned char),len,fp);
+	if(write_len < len)
+	{
+
+		SaveFormattedLog(LOG_RUN_LEVEL,"write file length error!");
+		fclose(fp);
+		return 1;
+	}
+	fwrite("\r\n",sizeof(unsigned char),2,fp);
+	fclose(fp);
+	return 0;
+
+}
 // out_buffer 至少有13个存储字节
 int CEncryptWrite::GetDeviceID(unsigned char *out_buffer)
 {
@@ -486,7 +476,7 @@ int CEncryptWrite::GetDeviceID(unsigned char *out_buffer)
 					order_byte[0],order_byte[1],order_byte[2],order_byte[3],
 					order_byte[4],order_byte[5],order_byte[6],order_byte[7]);
 				
-				
+				SaveSeqNo(order_byte,8);
 				
 				out_buffer[0] = order_byte[4];
 				out_buffer[1] = order_byte[5];
