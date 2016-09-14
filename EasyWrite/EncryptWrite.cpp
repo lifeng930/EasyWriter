@@ -399,7 +399,7 @@ extern void AlarmVoice();
 
 int SaveSeqNo(const unsigned char*buffer,int len)
 {
-	FILE *fp = fopen("sequence.txt","wba+");
+	FILE *fp = fopen("sequence.txt","a+");
 	if(NULL == fp)
 	{
 		SaveFormattedLog(LOG_RUN_LEVEL,"open file sequence.txt for write failed!");
@@ -438,7 +438,7 @@ int CEncryptWrite::GetDeviceID(unsigned char *out_buffer)
 		Sleep(5000);
 		return 1;
 	}
-
+    SaveFormattedLog(LOG_RUN_LEVEL,"begin GetDeviceID!");
 	while(!feof(pipe))
 	{
 		if(fgets(buffer,1024,pipe))
@@ -475,8 +475,8 @@ int CEncryptWrite::GetDeviceID(unsigned char *out_buffer)
 				sprintf((char *)log_buff,"0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x",
 					order_byte[0],order_byte[1],order_byte[2],order_byte[3],
 					order_byte[4],order_byte[5],order_byte[6],order_byte[7]);
-				int log_buff_len = strlen((char*)log_buff);
-				SaveSeqNo((unsigned char *)log_buff,log_buff_len);
+				int log_buff_len = strlen((char*)buffer);
+				SaveSeqNo((unsigned char *)buffer,log_buff_len);
 				
 				out_buffer[0] = order_byte[4];
 				out_buffer[1] = order_byte[5];
