@@ -426,7 +426,7 @@ int CEncryptWrite::GetDeviceID(unsigned char *out_buffer)
 	//存储按顺序排列的字节，中间结果
 	unsigned char order_byte[8] = {0};
 	char command_str[256] = {0};
-	strcpy(command_str,"dpcmd --raw-instruction \"4B\" --raw-require-return 12");
+	strcpy(command_str,"dpcmd --raw-instruction \"4B 00 00 00 00\" --raw-require-return 12");
 	char buffer[1024] = {0};
 	int index = 0;
 	unsigned int temp_interpretor[8] = {0};
@@ -496,7 +496,7 @@ int CEncryptWrite::GetDeviceID(unsigned char *out_buffer)
 				index++;
 				break;
 			}
-			if(NULL != strstr(buffer,"issuing raw instruction \"4B\" returns 12 bytes as required:"))
+			if(NULL != strstr(buffer,"issuing raw instruction \"4B 00 00 00 00\" returns 12 bytes as required:"))
 			{
 				
 				index++;
