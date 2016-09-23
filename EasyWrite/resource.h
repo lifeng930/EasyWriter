@@ -17,6 +17,7 @@
 #define IDC_STATIC2                     1014
 #define IDC_BUTTON2                     1015
 #define IDC_SINGLE_WRITE                1015
+#define IDC_TEST_PORT                   1015
 #define IDC_BUTTON3                     1016
 #define IDC_VALIDATION                  1016
 #define IDC_ERASE                       1017

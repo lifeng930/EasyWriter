@@ -32,7 +32,7 @@ public:
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 	
-	int  ReadBinPath();
+
 
 	int AddEnvironmentVariable(char *item,char *value);
 
@@ -50,7 +50,7 @@ public:
 
 	int SetSuccess();
 
-	int TestSignal();
+
 
 	//获取连接电脑的烧录器数目
 	int GetBusNumber();
@@ -60,17 +60,27 @@ protected:
 
 	HANDLE m_listen_thread_handle;
 	HANDLE	m_work_thread_handle;
+
 	//串口句柄
 	HANDLE m_serial_handle;
 	HANDLE m_serial_array_handle[10];
 
 	// 连接的串口数目
 	int  m_serial_port_number;
-	CString            m_src_file_path;
 	CStatusBarCtrl     m_StatBar;
 	HICON m_hIcon;
 	CWnd* m_pDrawWnd;
 	TCHAR m_serial_port_array[10][20];
+
+	//锁定窗口的控件元素
+	int FreezeWindowComponents();
+
+   //解锁窗口控件元素
+	int EnableAllWindowComponents();
+
+	// 读取用户提供的参数，并检查运行参数是否合法，
+	// 合法返回0，否则返回1
+	int CheckRunPara();
 
 	// 生成的消息映射函数
 	virtual BOOL OnInitDialog();
@@ -80,15 +90,16 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
-	afx_msg void OnBnClickedCheck();
 
+	// 选择执行按钮响应函数
 	afx_msg void OnBnTestUid();
 
 	
 	int current_status;
+
 public:
-	afx_msg void OnBnClickedEncrypt();
-public:
+
+	// 选择固件文件按钮响应函数
 	afx_msg void OnBnClickedSelect();
 
 public:
@@ -105,10 +116,6 @@ public:
 	static unsigned int WINAPI WriteSysData(void *arg);
 	static unsigned int WINAPI WriteEncryptData(void *arg);
 
-	// 采用电脑单独烧写一个芯片
-	static unsigned int WINAPI SingleWriteOneChip(void *arg);
-
-	static unsigned int WINAPI WriteOneChip(void *arg);
 
 	static unsigned int WINAPI WriteSpecifiedChip(void *arg);
 
@@ -119,21 +126,20 @@ public:
 
 	static unsigned int WINAPI TaskDispatcher(void *arg);
 	
-	//监听上位机线程，确认下一个芯片已经安装到位
-	static unsigned int WINAPI CheckNewChip(void *arg);
-
 
 	int InitialSerialPort();
 	int InitialSerialPortArray();
-public:
-	afx_msg void OnBnClickedButton2();
-public:
-	afx_msg void OnBnClickedSingleWrite();
-	private:
+
+
+private:
 		task_thread_para *m_listen_thread_para_array;
 
 		// 1 表示烧录，0表示擦除芯片, 2表示校验芯片
 		int m_task_type;
+
+		//固件保存地址
+		char m_sys_data_path[MAX_PATH];
+
 };
 
 

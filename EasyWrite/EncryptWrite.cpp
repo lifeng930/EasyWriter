@@ -1,6 +1,7 @@
 #include <io.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <direct.h>
 #include <vector>
 #include "EncryptWrite.h"
 #include "common/Log.h"
@@ -14,6 +15,7 @@ CEncryptWrite::CEncryptWrite(void)
 	                               0x00,0xA5,0x3B,0xCA,
 	                               0x00};
 	memcpy(m_out_head,temp,MAX_HEAD_LEN);
+	memset(m_device_uid,0,DEVICE_UID_LEN);
 }
 
 
@@ -116,10 +118,43 @@ int CEncryptWrite::WriteEncrypy()
 // device_index start from 1
 int CEncryptWrite::SaveOutFile(int device_index)
 {
-	char temp_name[50] = {0};
-	TCHAR temp_name_t[50] = {0};
-	memset(temp_name,0,50);
-	_snprintf(temp_name,49,"C:\\encrypt_%d.bin",device_index);
+		//获取当前工作路径作为前缀
+	char temp_name[MAX_PATH] = {0};
+	TCHAR temp_name_t[MAX_PATH] = {0};
+	memset(temp_name,0,MAX_PATH);
+
+	TCHAR exe_pre_path[MAX_PATH];
+	ZeroMemory(exe_pre_path,MAX_PATH);
+	::GetModuleFileName(NULL,exe_pre_path,MAX_PATH);
+	char temp_exe_path[MAX_PATH] = {0};
+	Tchar2Char(exe_pre_path,temp_exe_path);
+	std::string str_exe_full_path(temp_exe_path);
+	int index = str_exe_full_path.rfind("\\");
+	std::string str_exe_pre_path = str_exe_full_path.substr(0,index);
+	SaveFormattedLog(LOG_RUN_LEVEL,"exe module path: %s",temp_exe_path);
+    
+	unsigned char directory_name[MAX_PATH] ={0};
+	_snprintf((char *)directory_name,MAX_PATH -1,"%s\\encrypt_data",str_exe_pre_path.c_str());
+	SaveFormattedLog(LOG_RUN_LEVEL,"data drirectory: %s",directory_name);
+
+	//首先检查是否存在 encrypt_data 文件夹
+	if(-1 == _access((char*)directory_name,2))
+	{
+		SaveFormattedLog(LOG_RUN_LEVEL,"encrypt_data dos'nt exit! ");
+		if(0 !=_mkdir((const char*)directory_name))
+		{
+			SaveFormattedLog(LOG_RUN_LEVEL,"create encrypt_data directory failed! ");
+			return 1;
+		}
+	}
+
+	unsigned char encrypt_data_name[256] = {0};
+	sprintf((char *)encrypt_data_name,"0x%x_0x%x_0x%x_0x%x_0x%x_0x%x_0x%x_0x%x",m_device_uid[0],
+		m_device_uid[1],m_device_uid[2],m_device_uid[3],m_device_uid[4],m_device_uid[5],m_device_uid[6],m_device_uid[7]);
+
+	_snprintf(temp_name,MAX_PATH -1,"%s\\encrypt_data\\%s",str_exe_pre_path.c_str(),encrypt_data_name);
+
+	SaveFormattedLog(LOG_RUN_LEVEL,"save encrypt data file: %s ",encrypt_data_name);
     Char2Tchar(temp_name,temp_name_t);
 	if(-1 != _access(temp_name,0) )
 	{
@@ -219,10 +254,10 @@ int CEncryptWrite::GenerateFile(int device_index)
 	}
 
 	/* 获取设备的uid  */
-	unsigned char temp_id[15] = {0};
+//	unsigned char temp_id[15] = {0};
 	try
 	{
-		error_code = GetDeviceID(device_index,temp_id);
+		error_code = GetDeviceID(device_index,(unsigned char *)m_device_uid);
 	}
 	catch(...)
 	{
@@ -242,7 +277,7 @@ int CEncryptWrite::GenerateFile(int device_index)
 	}
 	try
 	{
-		error_code = m_encrypt_pfn((uint8_t*)temp_id,8,(uint8_t*)encrypt_buff,MAX_BIN_FILE_LEN);
+		error_code = m_encrypt_pfn((uint8_t*)m_device_uid,8,(uint8_t*)encrypt_buff,MAX_BIN_FILE_LEN);
 	}
 	catch(...)
 	{

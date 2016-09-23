@@ -38,6 +38,9 @@ public:
 	int ValidationSysData(const char *sys_data_path);
 	int ValidationSysData(int index,const char *sys_data_path);
 
+	int ValidationEncryptData(const char *encrypt_data_path);
+	int ValidationEncryptData(int index,const char *encrypt_data_path);
+
 public:
 	~CWriteCommand(void);
 private:
